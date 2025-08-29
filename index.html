@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>名前</title>
+  <meta name="keywords" content="ページのキーワードA,B,C" />
+  <meta name="description" content="ページの説明" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="stylesheet" href="index.css" />
+</head>
+<body>
+  <!-- 背景キャンバスの受け皿（p5 がここに描画） -->
+  <div id="p5-bg"></div>
+
+  <!-- 左上固定メニュー -->
+  <nav id="side-menu" aria-label="メインメニュー">
+    <a class="menu-btn" href="index.html">プロフィール</a>
+    <a class="menu-btn" href="portfolio.html">ポートフォリオ</a>
+  </nav>
+
+  <div id="outer">
+    <!-- Hero（白ベースのカード） -->
+    <header id="header" class="glass bright hero">
+      <h1><a href="index.html">KaitoFMS</a></h1>
+      <p class="subtitle">Creative Coder / p5.js & three.js / Portfolio & Profile</p>
+    </header>
+
+    <!-- メインコンテンツ（半透明のカード） -->
+    <main id="content">
+      <section class="glass dim section">
+        <h2 class="section-title">プロフィール</h2>
+        <p class="test-centered-text">JavaScript(P5.js)で主にインタラクティブな作品を作っている大学生です。</p>
+      </section>
+
+      <section class="glass dim section">
+        <h2 class="section-title">取得資格</h2>
+        <ul class="chips">
+          <li class="chip">基本情報技術者</li>
+        </ul>
+      </section>
+        <div class="cta">
+        <p>  
+        <a class="btn primary" href="https://openprocessing.org/user/476786?view=activity" target="_blank" rel="noopener">OpenProcessing</a>
+        <a class="btn primary" href="https://www.youtube.com/@kaito-fms" target="_blank" rel="noopener">YouTube</a>
+      </div>
+    </main>
+  </div>
+
+  <!-- 現在ページのメニューを強調 -->
+  <script>
+    const path = location.pathname.split('/').pop() || 'index.html';
+    document.querySelectorAll('#side-menu a').forEach(a=>{
+      if (a.getAttribute('href') === path) a.setAttribute('aria-current','page');
+    });
+  </script>
+
+  <!-- ✅ p5 は1回だけ読み込み -->
+  <script defer src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.min.js"></script>
+  <!-- あなたの背景スケッチ。#p5-bg に parent() していればOK -->
+  <script defer src="mySketch.js"></script>
+</body>
+</html>
