@@ -1,0 +1,441 @@
+/* ベース */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #f9fafb;  /* 白っぽい背景 */
+  color: #111827;       /* 濃いめグレー文字 */
+}
+
+/* --- 固定ヘッダー --- */
+.minimal-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-mark {
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  color: #6b7280;
+}
+
+.minimal-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #374151;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.nav-link.active {
+  font-weight: 600;
+  color: #111827;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 1px;
+  background: #111827;
+  transition: width 0.2s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* --- Hero セクション --- */
+.hero-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  padding-top: 60px; /* 固定ヘッダー分 */
+}
+
+#sketch-holder {
+  position: absolute;
+  inset: 0;
+}
+
+canvas.p5Canvas {
+  display: block;
+}
+
+/* コサギ上に名前表示 */
+.hero-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 60px;
+}
+
+.hero-label {
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6b7280;
+  margin: 0 0 8px;
+}
+
+.hero-name {
+  font-family:  "M PLUS 1p", "Hiragino Sans", "Helvetica Neue", sans-serif;
+  font-weight: 700;                 /* 少し太めにして自然光の上でも読める */
+  font-size: clamp(2.8rem, 6vw, 4rem);
+  color: #f5f6f7;                   /* 純白 */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35); /* 背景に埋もれないよう影をつける */
+  letter-spacing: 0.03em;
+  text-align: center;               /* 文字を中央寄せ */
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -120%); /* 画面中央にぴったり配置 */
+
+  .hero-name {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 8px 16px;
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+}
+
+}
+
+
+
+.profile-heading {
+  font-size: 1.8rem;
+  margin-bottom: 32px;
+  font-weight: 600;
+  color: #111827;
+  border-left: 6px solid #111827;
+  padding-left: 12px;
+}
+
+/* 手打ち用文章エリア */
+.profile-body {
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #374151;
+}
+
+/* --- Works ページ --- */
+.works-section {
+  background: #ffffff;
+  padding: 100px 16px 120px;
+}
+
+.works-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.section-heading {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.work-item img {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.work-meta {
+  margin-top: 6px;
+}
+
+.work-title {
+  font-size: 0.95rem;
+  color: #111827;
+}
+
+/* --- Footer --- */
+.minimal-footer {
+  text-align: center;
+  padding: 0px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+
+/* ===== Profile Section ===== */
+.profile-section {
+  background: #ffffff;
+  padding: 100px 16px 120px;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.9;
+}
+
+/* 見出し（Profile / About Me） */
+.section-heading {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-top: 60px;
+  margin-bottom: 20px;
+  color: #111827;
+  border-left: 6px solid #111827;
+  padding-left: 12px;
+}
+
+.profile-attributes p {
+  margin: 6px 0;
+  font-size: 18px;
+  color: #374151;
+}
+
+.profile-attributes strong {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* 本文部分 */
+.profile-body {
+  font-size: 1rem;
+  color: #374151;
+  margin-top: 16px;
+}
+
+/* ===== Links Section ===== */
+.links-container {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: flex-start;  /* ★ 左揃えに変更 */
+}
+
+
+.link-button {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 999px; /* 丸みのあるボタン */
+  text-decoration: none;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.link-button:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* OpenProcessingリンク（ホバー時にやや青） */
+.op-link:hover {
+  border-color: #4285f4;
+  color: #4285f4;
+}
+
+/* YouTubeリンク（ホバー時にやや赤） */
+.yt-link:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+/* ===== スクロールで下からふわっと出るアニメーション ===== */
+.js-fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.js-fade-in.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* ========== Works page layout ========== */
+
+/* ========== Works Page ========== */
+
+.works-page {
+  background: #f8f8f8;  /* index.html が白ベースなら、ちょいグレーでメリハリ */
+  min-height: 100vh;
+}
+
+.works-section {
+  padding: 80px 16px 96px;
+}
+
+.works-inner {
+  max-width: 1080px;    /* Profile の本文幅と揃えるイメージ */
+  margin: 0 auto;
+}
+
+.section-heading {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.works-caption {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 32px;
+  line-height: 1.7;
+}
+
+/* ---- 3列グリッド ---- */
+
+.works-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* PC で 3 列 */
+  gap: 24px;
+}
+
+/* タブレット：2列、スマホ：1列 */
+
+@media (max-width: 1024px) {
+  .works-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .works-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- 作品カード ---- */
+
+.work-item {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.4s ease-out,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.22s ease-out,
+    border-color 0.22s ease-out,
+    background 0.22s ease-out;
+  cursor: pointer;
+}
+/* IntersectionObserver で付けるクラス */
+.work-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* サムネイル部分 */
+
+.work-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;  /* サムネの高さを揃える */
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.work-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 0.35s ease-out;
+}
+
+/* ホバー時：ふわっとズーム＋カードが軽く浮く */
+
+.work-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+  border-color: rgba(0, 0, 0, 0.14);
+  background: #ffffff;
+}
+
+.work-item:hover .work-thumb img {
+  transform: scale(1.06);
+}
+
+/* キーボード操作時も「選択できそう感」を出す */
+
+.work-item:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+}
+
+/* テキスト部分 */
+
+.work-meta {
+  padding: 14px 16px 16px;
+}
+
+.work-title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.work-sub {
+  display: block;
+  font-size: 0.82rem;
+  color: #777;
+}
+

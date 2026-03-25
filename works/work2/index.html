@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Drag & Drop Inquiry Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- お問い合わせボタン -->
+  <button id="open" class="open-btn">お問い合わせ</button>
+
+  <!-- 表示エリア -->
+  <div id="playground" aria-hidden="true">
+    <!-- ★ プログレスバー（追加） -->
+    <div id="progress-container">
+      <div id="progress-bar"></div>
+    </div>
+
+    <!-- ドラッグフォーム -->
+    <form id="form" class="draggable" autocomplete="off">
+      <p class="hint">入力フォームを右の赤い四角にドラッグしてください</p>
+      <textarea id="textarea" rows="8" cols="48" placeholder="ここに入力…"></textarea>
+      <input id="submit" type="submit" value="送信" class="visually-hidden" />
+    </form>
+
+    <!-- ドロップゾーン -->
+    <div id="dropzone"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

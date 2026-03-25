@@ -1,0 +1,432 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>都道府県別 電力消費量（1975〜2015）</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    margin: 20px;
+    background: #f7f7f7;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 4px;
+  }
+  #controls {
+  position: fixed;
+  top: 36px;
+  right: 24px;   /* ← 追加 */
+  left: auto;    /* ← left を無効化 */
+  background: rgba(255,255,255,0.95);
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+  z-index: 10;
+  font-size: 18px;
+}
+
+  #yearSelect {
+    font-size: 18px;
+    margin-left: 6px;
+  }
+  #info {
+    font-size: 16px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  #chartWrapper {
+    margin-top: 70px;
+  }
+  #chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center; 
+  gap: 12px;
+  height: 360px;
+  padding: 16px 20px 40px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  overflow-x: auto;
+}
+
+.bar {
+  position: relative;              /* ラベルをabsoluteで載せるため */
+  flex: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;       /* 棒の底を揃える */
+  padding-bottom: 40px;            /* ラベル・数値ぶんの余白 */
+}
+
+.bar-rect {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, #2b6cb0, #63b3ed);
+  /* 高さは JS 側で style.height に代入（既存のままでOK） */
+}
+
+.bar-value {
+  position: absolute;
+  bottom: 24px;                    /* 棒のすぐ下あたり */
+  font-size: 10px;
+  color: #333;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.bar-label {
+  position: absolute;
+  bottom: -24px;                       /* いちばん下に固定 */
+  font-size: 11px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+}
+
+  .bar-value {
+    font-size: 10px;
+    margin-bottom: 2px;
+    color: #333;
+  }
+</style>
+
+<div id="controls">
+  <div>
+    年:
+    <select id="yearSelect"></select>
+  </div>
+  <div id="info"></div>
+</div>
+
+<h1>都道府県別 電灯使用電力量（棒グラフ比較）</h1>
+<p style="color:#555;font-size:18px;">
+    一般電気事業者が供給する電力の使用電力量のうち、電灯に係る部分
+  <br>年を選ぶと、その年の都道府県別電力消費量を降順に並べて表示します。<b>単位は百万kWhです。</b>
+  
+</p>
+
+<div id="chartWrapper">
+  <div id="chart"></div>
+</div>
+
+  <footer>
+    <p>出典：統計ダッシュボード（https://dashboard.e-stat.go.jp/）</p>
+    <p>「このサービスは、統計ダッシュボードのAPI機能を使用していますが、サービスの内容は国によって保証されたものではありません。」</p>
+  </footer>
+
+<script>
+const INDICATOR_CODE = "0901010100000010010"; // 指標コード
+const YEAR_MIN = 1975;
+const YEAR_MAX = 2015;
+
+// 統計ダッシュボードの都道府県コード一覧（県レベル）
+const PREFS = [
+  { code: "01000", name: "北海道" },
+  { code: "02000", name: "青森県" },
+  { code: "03000", name: "岩手県" },
+  { code: "04000", name: "宮城県" },
+  { code: "05000", name: "秋田県" },
+  { code: "06000", name: "山形県" },
+  { code: "07000", name: "福島県" },
+  { code: "08000", name: "茨城県" },
+  { code: "09000", name: "栃木県" },
+  { code: "10000", name: "群馬県" },
+  { code: "11000", name: "埼玉県" },
+  { code: "12000", name: "千葉県" },
+  { code: "13000", name: "東京都" },
+  { code: "14000", name: "神奈川県" },
+  { code: "15000", name: "新潟県" },
+  { code: "16000", name: "富山県" },
+  { code: "17000", name: "石川県" },
+  { code: "18000", name: "福井県" },
+  { code: "19000", name: "山梨県" },
+  { code: "20000", name: "長野県" },
+  { code: "21000", name: "岐阜県" },
+  { code: "22000", name: "静岡県" },
+  { code: "23000", name: "愛知県" },
+  { code: "24000", name: "三重県" },
+  { code: "25000", name: "滋賀県" },
+  { code: "26000", name: "京都府" },
+  { code: "27000", name: "大阪府" },
+  { code: "28000", name: "兵庫県" },
+  { code: "29000", name: "奈良県" },
+  { code: "30000", name: "和歌山県" },
+  { code: "31000", name: "鳥取県" },
+  { code: "32000", name: "島根県" },
+  { code: "33000", name: "岡山県" },
+  { code: "34000", name: "広島県" },
+  { code: "35000", name: "山口県" },
+  { code: "36000", name: "徳島県" },
+  { code: "37000", name: "香川県" },
+  { code: "38000", name: "愛媛県" },
+  { code: "39000", name: "高知県" },
+  { code: "40000", name: "福岡県" },
+  { code: "41000", name: "佐賀県" },
+  { code: "42000", name: "長崎県" },
+  { code: "43000", name: "熊本県" },
+  { code: "44000", name: "大分県" },
+  { code: "45000", name: "宮崎県" },
+  { code: "46000", name: "鹿児島県" },
+  { code: "47000", name: "沖縄県" }
+];
+
+const yearSelect = document.getElementById("yearSelect");
+const chart      = document.getElementById("chart");
+const info       = document.getElementById("info");
+
+// years: ["1975FY00", "1980FY00", ...]
+let years = [];
+
+// values[yearCode][prefCode] = number（百万kWh 単位）
+const values = {};
+
+// prefCode → bar要素
+const barsByCode = {};
+
+let firstRender = true;
+
+// 年コードから表示用の「○○」部分だけ取り出す（"2015FY00" → "2015"）
+function cleanYearLabel(code) {
+  return code.replace(/FY\d+$/, "");
+}
+
+async function main() {
+  try {
+    const res = await fetch("power.json");
+    if (!res.ok) {
+      throw new Error("HTTPエラー: " + res.status);
+    }
+    const json = await res.json();
+    console.log("power.json 読み込みOK:", json);
+
+    const stat = json.GET_STATS?.STATISTICAL_DATA;
+    if (!stat) throw new Error("GET_STATS.STATISTICAL_DATA が見つかりません");
+
+    const dataObjs = stat.DATA_INF?.DATA_OBJ;
+    if (!Array.isArray(dataObjs)) {
+      throw new Error("DATA_INF.DATA_OBJ が配列ではありません");
+    }
+
+    const yearSet = new Set();
+
+    dataObjs.forEach(d => {
+      const v = d.VALUE;
+      if (!v) return;
+
+      if (v["@indicator"] && v["@indicator"] !== INDICATOR_CODE) return;
+
+      const timeCode =
+        v["@time"] ||
+        v["@timeCode"] ||
+        v["@time_code"];
+
+      const regionCode =
+        v["@regionCode"] ||
+        v["@area"] ||
+        v["@areaCode"] ||
+        v["@area_code"];
+
+      const raw = v["$"];
+      const num = raw == null ? NaN : parseFloat(raw);
+
+      if (!timeCode || !regionCode || isNaN(num)) return;
+
+      const yearNum = parseInt(cleanYearLabel(timeCode), 10);
+      if (isNaN(yearNum) || yearNum < YEAR_MIN || yearNum > YEAR_MAX) return;
+
+      yearSet.add(timeCode);
+
+      if (!values[timeCode]) values[timeCode] = {};
+      values[timeCode][regionCode] = num; // 単位：百万kWh
+    });
+
+    years = Array.from(yearSet)
+      .sort((a, b) => parseInt(cleanYearLabel(a), 10) - parseInt(cleanYearLabel(b), 10));
+
+    if (years.length === 0) {
+      throw new Error("1975〜2015 の範囲で有効なデータが見つかりませんでした");
+    }
+
+    initYearSelect();
+    setupBars(); // 最初に47本の棒を作る
+
+    const latest = years[years.length - 1];
+    yearSelect.value = latest;
+    renderYear(latest);
+
+  } catch (e) {
+    console.error("main内でエラー:", e);
+    chart.innerHTML = "<p>power.json の読み込みかパースでエラーが発生しました。</p>";
+    info.textContent = e.message;
+  }
+}
+
+function initYearSelect() {
+  yearSelect.innerHTML = "";
+  years.forEach(code => {
+    const opt = document.createElement("option");
+    const label = cleanYearLabel(code);
+    opt.value = code;
+    opt.textContent = label + "年";
+    yearSelect.appendChild(opt);
+  });
+
+  yearSelect.addEventListener("change", () => {
+    renderYear(yearSelect.value);
+  });
+}
+
+// 47都道府県分の bar 要素を一度だけ作る
+function setupBars() {
+  chart.innerHTML = "";
+  PREFS.forEach(p => {
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.dataset.prefCode = p.code;
+
+    const barRect = document.createElement("div");
+    barRect.className = "bar-rect";
+    // 高さアニメーション
+    barRect.style.transition = "height 0.4s ease, background 0.4s ease";
+
+    const valLabel = document.createElement("div");
+    valLabel.className = "bar-value";
+
+    const nameLabel = document.createElement("div");
+    nameLabel.className = "bar-label";
+    nameLabel.textContent = p.name;
+
+    bar.appendChild(barRect);
+    bar.appendChild(valLabel);
+    bar.appendChild(nameLabel);
+    chart.appendChild(bar);
+
+    barsByCode[p.code] = bar;
+  });
+}
+
+// 年を切り替えたときの描画＋並び替えアニメーション
+function renderYear(yearCode) {
+  const yearLabel = cleanYearLabel(yearCode);
+  const dataForYear = values[yearCode] || {};
+
+  // PREFS に基づいて値を付与
+  let rows = PREFS.map(p => ({
+    code: p.code,
+    name: p.name,
+    value: dataForYear[p.code] ?? null
+  }));
+
+  rows = rows.filter(r => r.value != null && !isNaN(r.value));
+  if (rows.length === 0) {
+    chart.innerHTML = `<p>${yearLabel}年のデータがありません。</p>`;
+    info.textContent = "";
+    return;
+  }
+
+  // 大きい順にソート（左が最大）
+  rows.sort((a, b) => b.value - a.value);
+
+  const vals = rows.map(r => r.value);
+  const maxV = Math.max(...vals);
+  const minV = Math.min(...vals);
+
+  // ---- 初回はアニメーションなしで高さ＆順序だけ整える ----
+  if (firstRender) {
+    rows.forEach(r => {
+      const bar = barsByCode[r.code];
+      if (!bar) return;
+      const barRect = bar.querySelector(".bar-rect");
+      const valLabel = bar.querySelector(".bar-value");
+      const nameLabel = bar.querySelector(".bar-label");
+
+      const h = (r.value / maxV) * 300;
+      barRect.style.height = h + "px";
+
+      const t = (r.value - minV) / (maxV - minV || 1);
+      const lightness = 75 - 30 * t;
+      barRect.style.background = `hsl(210, 70%, ${lightness}%)`;
+
+      valLabel.textContent = Math.round(r.value).toLocaleString();
+      nameLabel.textContent = r.name;
+
+      chart.appendChild(bar);
+    });
+    firstRender = false;
+
+  } else {
+    // ---- FLIP アニメーション ----
+    const firstRects = new Map();
+
+    // 並び替え前の位置を記録
+    rows.forEach(r => {
+      const bar = barsByCode[r.code];
+      if (!bar) return;
+      const rect = bar.getBoundingClientRect();
+      firstRects.set(r.code, rect);
+    });
+
+    // 値・色・テキストを更新
+    rows.forEach(r => {
+      const bar = barsByCode[r.code];
+      if (!bar) return;
+      const barRect = bar.querySelector(".bar-rect");
+      const valLabel = bar.querySelector(".bar-value");
+      const nameLabel = bar.querySelector(".bar-label");
+
+      const h = (r.value / maxV) * 300;
+      barRect.style.height = h + "px";
+
+      const t = (r.value - minV) / (maxV - minV || 1);
+      const lightness = 75 - 30 * t;
+      barRect.style.background = `hsl(210, 70%, ${lightness}%)`;
+
+      valLabel.textContent = Math.round(r.value).toLocaleString();
+      nameLabel.textContent = r.name;
+    });
+
+    // 新しい順序でDOMを並べ替え
+    rows.forEach(r => {
+      const bar = barsByCode[r.code];
+      if (!bar) return;
+      chart.appendChild(bar);
+    });
+
+    // 並べ替え後の位置を取得し、差分だけ一旦逆向きにずらす
+    rows.forEach(r => {
+      const bar = barsByCode[r.code];
+      if (!bar) return;
+      const firstRect = firstRects.get(r.code);
+      if (!firstRect) return;
+      const lastRect = bar.getBoundingClientRect();
+
+      const dx = firstRect.left - lastRect.left;
+      const dy = firstRect.top - lastRect.top;
+
+      bar.style.transition = "none";
+      bar.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+
+    // 再描画を強制 → ここからアニメ開始
+    void chart.offsetWidth;
+
+    rows.forEach(r => {
+      const bar = barsByCode[r.code];
+      if (!bar) return;
+      bar.style.transition = "transform 0.5s ease";
+      bar.style.transform = "translate(0, 0)";
+    });
+  }
+
+  // 下の情報テキスト
+  info.textContent =
+    `${yearLabel}年 / 都道府県数: ${rows.length} / ` +
+    `最大値: ${Math.round(maxV).toLocaleString()} 百万kWh / ` +
+    `最小値: ${Math.round(minV).toLocaleString()} 百万kWh`;
+}
+
+// 実行
+main();
+</script>
