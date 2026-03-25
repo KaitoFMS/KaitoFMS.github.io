@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gallery Shooter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="gallery">
+    <h1 class="title">写真を選んでバトル開始！</h1>
+    <div class="main"></div>
+    <div class="thumb" aria-label="サムネイル一覧" role="listbox"></div>
+  </div>
+
+<section id="game" class="hidden">
+    <div class="hud">
+      <div class="hp">
+        <span class="label">YOU</span>
+        <div class="bar"><div id="hp-player" class="bar-fill"></div></div>
+      </div>
+      <div class="hp">
+        <span class="label">ENEMY</span>
+        <div class="bar"><div id="hp-enemy" class="bar-fill enemy"></div></div>
+      </div>
+    </div>
+
+    <canvas id="stage" width="720" height="420" aria-label="Battle Stage"></canvas>
+
+    <div id="overlay" class="overlay hidden" aria-live="polite"></div>
+    <div id="controls" class="controls">
+      <div class="keys">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+        <span class="sep">/</span>
+        <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd>
+        <span class="sep">= 移動</span>
+      </div>
+      <div class="keys"><kbd>Space</kbd> = ショット</div>
+      <button id="btn-retry" class="btn hidden">もう一度</button>
+    </div>
+  </section>
+
+  <section id="result" class="result hidden">
+    <div class="card">
+      <img id="result-image" alt="" />
+      <p id="result-msg"></p>
+      <button id="btn-back" class="btn">写真選択へ戻る</button>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>

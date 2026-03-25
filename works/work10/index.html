@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>作品デモ | Work10 - Kaito Masutani</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* ======== 動画を全画面に配置 ======== */
+    video {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      z-index: 0;
+      transform: translate(-50%, -50%);
+      object-fit: cover;
+      background: #000;
+      transition: opacity 0.8s ease;
+    }
+
+    /* ======== コントロールバーを上に浮かせる ======== */
+    video::-webkit-media-controls-panel {
+      transform: translateY(0px); /* ← 上に40px移動 */
+    }
+
+    /* Firefoxなどでは上記が効かないため、全体の余白も補助的に確保 */
+    video {
+      padding-bottom: 40px;
+    }
+
+    /* ======== 戻るボタン ======== */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      backdrop-filter: blur(6px);
+      transition: background 0.3s ease;
+      z-index: 1;
+    }
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ======== スマホ時 ======== */
+    @media (max-width: 600px) {
+      .back-btn {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+      }
+      video::-webkit-media-controls-panel {
+        transform: translateY(-30px); /* モバイルはもう少し控えめ */
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 戻るボタン -->
+  <a href="../../works.html" class="back-btn">← Back to Works</a>
+
+  <!-- デモ動画 -->
+  <video src="demo.mp4" autoplay loop controls playsinline></video>
+
+</body>
+</html>
